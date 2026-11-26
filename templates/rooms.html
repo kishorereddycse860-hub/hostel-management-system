@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Rooms{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Rooms</h3>
+  <div><a href="{{ url_for('allocate_room') }}" class="btn btn-outline-primary">Allocate</a>
+  <a href="{{ url_for('add_room') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Room</a></div>
+</div>
+<div class="table-responsive"><table class="table table-striped align-middle">
+  <thead><tr><th>Room</th><th>Type</th><th>Occupancy</th><th>Monthly Fee</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
+  <tbody>
+  {% for r in rooms %}
+  <tr><td>{{ r.room_number }}</td><td>{{ r.room_type }}</td><td>{{ r.occupied }} / {{ r.capacity }}</td><td>₹{{ '%.2f' % r.monthly_fee }}</td><td>{{ r.description }}</td>
+    <td>{% if r.occupied >= r.capacity %}<span class="badge bg-danger">Full</span>{% elif r.occupied > 0 %}<span class="badge bg-warning text-dark">Partial</span>{% else %}<span class="badge bg-success">Empty</span>{% endif %}</td>
+    <td class="text-nowrap"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('edit_room', room_id=r.id) }}">Edit</a>
+      <form method="post" action="{{ url_for('delete_room', room_id=r.id) }}" class="d-inline" data-confirm="Delete room {{ r.room_number }}?"><button class="btn btn-sm btn-outline-danger">Delete</button></form></td></tr>
+  {% else %}<tr><td colspan="7" class="text-center text-muted">No rooms yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+{% endblock %}

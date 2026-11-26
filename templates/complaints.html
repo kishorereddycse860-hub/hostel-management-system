@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Complaints{% endblock %}
+{% block content %}
+<h3 class="mb-3">Complaints</h3>
+<form method="post" class="card p-4 mb-4">
+  <div class="row g-3">
+    <div class="col-md-4"><label class="form-label">Student</label>
+      <select name="student_id" class="form-select" required><option value="">-- Select student --</option>
+      {% for s in students %}<option value="{{ s.id }}">{{ s.name }} ({{ s.roll_number }}){% if s.room_number %} - Room {{ s.room_number }}{% endif %}</option>{% endfor %}
+      </select></div>
+    <div class="col-md-5"><label class="form-label">Title</label><input name="title" class="form-control" required></div>
+    <div class="col-md-3"><label class="form-label">Category</label>
+      <select name="category" class="form-select">{% for c in ['Electricity', 'Plumbing', 'Wi-Fi', 'Cleaning', 'Furniture', 'Other'] %}<option>{{ c }}</option>{% endfor %}</select></div>
+    <div class="col-12"><label class="form-label">Description</label><textarea name="description" rows="2" class="form-control" required></textarea></div>
+    <div class="col-12"><button class="btn btn-primary">Register Complaint</button></div>
+  </div>
+</form>
+<div class="mb-3 btn-group">
+  {% for st in ['All', 'Pending', 'In Progress', 'Resolved'] %}
+  <a href="{{ url_for('complaints', status=st) }}" class="btn btn-outline-primary {{ 'active' if status_filter == st }}">{{ st }}</a>{% endfor %}
+</div>
+<div class="table-responsive"><table class="table table-striped align-middle">
+  <thead><tr><th>Title</th><th>Student</th><th>Category</th><th>Description</th><th>Status</th><th>Update</th></tr></thead>
+  <tbody>
+  {% for c in complaint_list %}
+  <tr><td>{{ c.title }}</td><td>{{ c.student_name }}<br><small class="text-muted">Room {{ c.room_number or '-' }}</small></td><td>{{ c.category }}</td><td>{{ c.description }}</td>
+    <td><span class="badge bg-{{ 'danger' if c.status == 'Pending' else ('warning text-dark' if c.status == 'In Progress' else 'success') }}">{{ c.status }}</span></td>
+    <td><form method="post" action="{{ url_for('update_complaint_status', complaint_id=c.id) }}" class="d-flex gap-1">
+      <select name="status" class="form-select form-select-sm">{% for st in ['Pending', 'In Progress', 'Resolved'] %}<option {{ 'selected' if c.status == st }}>{{ st }}</option>{% endfor %}</select>
+      <button class="btn btn-sm btn-outline-primary">Save</button></form></td></tr>
+  {% else %}<tr><td colspan="6" class="text-center text-muted">No complaints found.</td></tr>{% endfor %}
+  </tbody></table></div>
+{% endblock %}

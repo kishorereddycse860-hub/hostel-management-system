@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h3 class="mb-4">Dashboard</h3>
+<div class="row g-3 mb-4">
+  {% for label, value, color in [
+    ('Total Students', stats.total_students, 'primary'),
+    ('Total Rooms', stats.total_rooms, 'secondary'),
+    ('Occupied Beds', stats.occupied_beds, 'warning'),
+    ('Available Beds', stats.available_beds, 'success'),
+    ('Pending Complaints', stats.pending_complaints, 'danger'),
+    ('Fees Collected', '₹%.2f' % stats.fees_collected, 'info')] %}
+  <div class="col-12 col-md-6 col-xl-4">
+    <div class="card border-{{ color }} shadow-sm"><div class="card-body">
+      <div class="text-muted">{{ label }}</div><div class="fs-3 fw-bold">{{ value }}</div>
+    </div></div>
+  </div>
+  {% endfor %}
+</div>
+<div class="row g-3">
+  <div class="col-lg-6"><div class="card"><div class="card-header">Recent Fee Payments</div>
+    <table class="table mb-0"><thead><tr><th>Student</th><th>Month</th><th>Date</th><th>Amount</th></tr></thead><tbody>
+    {% for f in recent_fees %}<tr><td>{{ f.student_name }} <small class="text-muted">{{ f.roll_number }}</small></td><td>{{ f.payment_month }}</td><td>{{ f.payment_date }}</td><td>₹{{ '%.2f' % f.amount }}</td></tr>
+    {% else %}<tr><td colspan="4" class="text-center text-muted">No payments yet.</td></tr>{% endfor %}
+    </tbody></table></div></div>
+  <div class="col-lg-6"><div class="card"><div class="card-header">Recent Complaints</div>
+    <table class="table mb-0"><thead><tr><th>Title</th><th>Student</th><th>Category</th><th>Status</th></tr></thead><tbody>
+    {% for c in recent_complaints %}<tr><td>{{ c.title }}</td><td>{{ c.student_name }}</td><td>{{ c.category }}</td><td>{{ c.status }}</td></tr>
+    {% else %}<tr><td colspan="4" class="text-center text-muted">No complaints yet.</td></tr>{% endfor %}
+    </tbody></table></div></div>
+</div>
+{% endblock %}

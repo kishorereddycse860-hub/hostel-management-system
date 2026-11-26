@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Fees{% endblock %}
+{% block content %}
+<h3 class="mb-3">Fee Management</h3>
+<form method="post" class="card p-4 mb-4">
+  <div class="row g-3">
+    <div class="col-md-4"><label class="form-label">Student</label>
+      <select name="student_id" id="feeStudent" class="form-select" required><option value="">-- Select student --</option>
+      {% for s in students %}<option value="{{ s.id }}" data-fee="{{ s.monthly_fee or '' }}">{{ s.name }} ({{ s.roll_number }}){% if s.room_number %} - Room {{ s.room_number }}{% endif %}</option>{% endfor %}
+      </select></div>
+    <div class="col-md-2"><label class="form-label">Amount (₹)</label><input type="number" step="0.01" min="0.01" name="amount" id="feeAmount" class="form-control" required></div>
+    <div class="col-md-3"><label class="form-label">Payment Month</label><input name="payment_month" class="form-control" value="{{ default_month }}" required></div>
+    <div class="col-md-3"><label class="form-label">Payment Date</label><input type="date" name="payment_date" class="form-control" value="{{ default_date }}" required></div>
+    <div class="col-md-3"><label class="form-label">Method</label>
+      <select name="payment_method" class="form-select">{% for m in ['UPI', 'Cash', 'Card', 'Bank Transfer'] %}<option>{{ m }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><label class="form-label">Remarks</label><input name="remarks" class="form-control"></div>
+    <div class="col-md-3 d-flex align-items-end"><button class="btn btn-primary w-100">Record Payment</button></div>
+  </div>
+</form>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-6"><input name="q" value="{{ search_query }}" class="form-control" placeholder="Search by student, roll no or month"></div>
+  <div class="col-auto"><button class="btn btn-outline-primary">Search</button>
+  {% if search_query %}<a class="btn btn-outline-secondary" href="{{ url_for('fees') }}">Clear</a>{% endif %}</div>
+</form>
+<div class="table-responsive"><table class="table table-striped">
+  <thead><tr><th>Student</th><th>Room</th><th>Month</th><th>Date</th><th>Method</th><th>Remarks</th><th class="text-end">Amount</th></tr></thead>
+  <tbody>
+  {% for f in fee_records %}
+  <tr><td>{{ f.student_name }} <small class="text-muted">{{ f.roll_number }}</small></td><td>{{ f.room_number or '-' }}</td><td>{{ f.payment_month }}</td><td>{{ f.payment_date }}</td><td>{{ f.payment_method }}</td><td>{{ f.remarks }}</td><td class="text-end">₹{{ '%.2f' % f.amount }}</td></tr>
+  {% else %}<tr><td colspan="7" class="text-center text-muted">No payments found.</td></tr>{% endfor %}
+  </tbody>
+  <tfoot><tr><th colspan="6" class="text-end">Total</th><th class="text-end">₹{{ '%.2f' % total_shown }}</th></tr></tfoot>
+</table></div>
+{% endblock %}

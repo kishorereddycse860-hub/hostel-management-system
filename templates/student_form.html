@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Edit' if student else 'Add' }} Student{% endblock %}
+{% block content %}
+{% set d = form_data if form_data else (student if student else {}) %}
+<h3 class="mb-3">{{ 'Edit' if student else 'Add' }} Student</h3>
+<form method="post" class="card p-4 needs-validation" novalidate>
+  <div class="row g-3">
+    <div class="col-md-6"><label class="form-label">Roll Number</label><input name="roll_number" class="form-control" value="{{ d.get('roll_number', '') }}" required></div>
+    <div class="col-md-6"><label class="form-label">Full Name</label><input name="name" class="form-control" value="{{ d.get('name', '') }}" required></div>
+    <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="{{ d.get('email', '') }}" required></div>
+    <div class="col-md-6"><label class="form-label">Phone</label><input name="phone" class="form-control" value="{{ d.get('phone', '') }}" required></div>
+    <div class="col-md-6"><label class="form-label">Course / Department</label><input name="course" class="form-control" value="{{ d.get('course', '') }}" required></div>
+    <div class="col-md-6"><label class="form-label">Room (optional)</label>
+      {% set chosen = (d.get('room_id') | string) if d.get('room_id') is not none else '' %}
+      <select name="room_id" class="form-select"><option value="">-- Not allocated --</option>
+      {% for r in available_rooms %}
+        <option value="{{ r.id }}" {{ 'selected' if chosen == r.id|string }}>Room {{ r.room_number }} ({{ r.room_type }}, {{ r.occupied }}/{{ r.capacity }} beds)</option>
+      {% endfor %}</select></div>
+  </div>
+  <div class="mt-4"><button class="btn btn-primary">Save</button> <a href="{{ url_for('students') }}" class="btn btn-secondary">Cancel</a></div>
+</form>
+{% endblock %}
